@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from .forms import PageForm
 from .models import Page
 
 
@@ -14,13 +15,13 @@ class PageDetailView(DetailView):
 
 class CreatePageView(CreateView):
     model = Page
-    fields = ['title', 'content', 'order', ]
     success_url = reverse_lazy('pages:pages')
+    form_class = PageForm
 
 
 class UpdatePageView(UpdateView):
     model = Page
-    fields = ['title', 'content', 'order', ]
+    form_class = PageForm
     template_name_suffix = "_update_form"
 
     def get_success_url(self):
