@@ -1,18 +1,11 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .forms import PageForm
 from .models import Page
-
-
-class StaffRequiredMixin(object):
-    """Use mixin to require staff user logged in
-    to access view"""
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_staff:
-            return redirect('admin:login')
-        return super(StaffRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
 class PageListView(ListView):
@@ -23,13 +16,15 @@ class PageDetailView(DetailView):
     model = Page
 
 
-class CreatePageView(StaffRequiredMixin, CreateView):
+@method_decorator(staff_member_required, name='dispatch')
+class CreatePageView(CreateView):
     model = Page
     success_url = reverse_lazy('pages:pages')
     form_class = PageForm
 
 
-class UpdatePageView(StaffRequiredMixin, UpdateView):
+@method_decorator(staff_member_required, name='dispatch')
+class UpdatePageView(UpdateView):
     model = Page
     form_class = PageForm
     template_name_suffix = "_update_form"
@@ -38,6 +33,7 @@ class UpdatePageView(StaffRequiredMixin, UpdateView):
         return reverse_lazy('pages:update', args=[self.object.id]) + '?ok'
 
 
-class DeletePageView(StaffRequiredMixin, DeleteView):
+@method_decorator(staff_member_required, name='dispatch')
+class DeletePageView(DeleteView):
     model = Page
     success_url = reverse_lazy('pages:pages')
